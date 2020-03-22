@@ -16,6 +16,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: kondo
+  namespace: kube-system
 roleRef:
   kind: Role
   name: kondo

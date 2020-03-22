@@ -1,0 +1,54 @@
+---
+name: Auth Service
+
+on:
+  push:
+    branches:
+    - dev
+    - master
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - run: node util/ref-parser.js
+      env:
+        ref: ${{ github.ref }}
+    
+    - run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+        docker build -t image -f auth_service/Dockerfile .
+
+        docker tag image docker.pkg.github.com/hreeder/kondo/auth:dev
+        docker push docker.pkg.github.com/hreeder/kondo/auth
+
+  apply:
+    name: Apply
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - run: node util/ref-parser.js
+      env:
+        ref: ${{ github.ref }}
+
+    - name: Set K8s Context
+      uses: azure/k8s-set-context@v1
+      with:
+        method: service-account
+        k8s-url: ${{ secrets.K8S_URL }}
+        k8s-secret: ${{ secrets.K8S_SA_TOKEN }}
+
+    - name: Deploy Auth Service
+      uses: azure/k8s-deploy@v1
+      with:
+        kubectl-version: "v1.14.8"
+        namespace: ${{ env.K8S_NAMESPACE }}
+        manifests: auth_service/manifest.yaml
+        images: docker.pkg.github.com/hreeder/kondo/auth:dev

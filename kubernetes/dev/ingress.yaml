@@ -9,7 +9,7 @@ spec:
   - host: api.kondo-dev.err.wtf
     http:
       paths:
-      - path: /api/auth
+      - path: /auth
         backend:
           serviceName: auth
           servicePort: 8000
