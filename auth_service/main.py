@@ -4,16 +4,16 @@ Pylint Disables:
     invalid-name - allow "app" to exist for flask usage
 """
 # pylint: disable=invalid-name
-from pprint import pprint
-
-from flask import Flask, request
+from flask import Flask
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from .discord_auth import AUTH
 
 app = Flask(__name__)
 app.register_blueprint(AUTH, url_prefix="/auth/discord")
 
-
-@app.before_request
-def print_headers():
-    pprint(dict(request.headers))
+# Allow the following headers our proxy sets
+# * X-Forwarded-Proto
+# * X-Forwarded-Host
+# * X-Forwarded-For
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1, x_for=1)
