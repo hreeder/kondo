@@ -6,6 +6,9 @@ on:
     branches:
     - dev
     - master
+    paths:
+    - .github/workflows/kube-scaffolding.yaml
+    - kubernetes/**
 
 jobs:
   scaffold:

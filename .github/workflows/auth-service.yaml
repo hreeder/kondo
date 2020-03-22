@@ -7,7 +7,7 @@ on:
     - dev
     - master
     paths:
-    - .github/auth-service.yaml
+    - .github/workflows/auth-service.yaml
     - auth_service/**
     - shared/**
 
