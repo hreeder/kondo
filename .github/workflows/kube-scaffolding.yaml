@@ -1,0 +1,36 @@
+---
+name: Kube Scaffolding
+
+on:
+  push:
+    branches:
+    - dev
+    - master
+
+jobs:
+  scaffold:
+    name: Apply
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - run: node util/ref-parser.js
+      env:
+        ref: ${{ github.ref }}
+    
+    - name: Set K8s Context
+      uses: azure/k8s-set-context@v1
+      with:
+        method: service-account
+        k8s-url: ${{ secrets.K8S_URL }}
+        k8s-secret: ${{ secrets.K8S_SA_TOKEN }}
+
+    - name: Apply Scaffolding
+      uses: azure/k8s-deploy@v1
+      with:
+        kubectl-version: "v1.14.8"
+        namespace: ${{ env.K8S_NAMESPACE }}
+        manifests: |
+          kubernetes/${{ env.K8S_DIR }}/configmap.yaml
+          kubernetes/${{ env.K8S_DIR }}/ingress.yaml
