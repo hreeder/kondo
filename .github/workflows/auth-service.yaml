@@ -58,4 +58,4 @@ jobs:
         images: kondogg/auth:dev
 
     - name: Rollout Auth Service
-      run: kubectl rollout restart deployment/auth
+      run: kubectl rollout restart deployment/auth --namespace ${{ env.K8S_NAMESPACE }}

@@ -7,10 +7,13 @@ Pylint Disables:
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from shared.kondo.health import HEALTH
+
 from .discord_auth import AUTH
 
 app = Flask(__name__)
 app.register_blueprint(AUTH, url_prefix="/auth/discord")
+app.register_blueprint(HEALTH, url_prefix="/auth/_health")
 
 # Allow the following headers our proxy sets
 # * X-Forwarded-Proto
