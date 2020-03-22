@@ -6,6 +6,6 @@ WORKDIR /usr/src/app
 COPY auth_service ./auth_service
 COPY shared ./shared
 
-RUN pip install -r auth_service/requirements.txt
+RUN pip install -r shared/requirements.txt
 
 CMD ["/usr/local/bin/gunicorn", "auth_service.main:app", "-c", "./shared/gunicorn.py"]
