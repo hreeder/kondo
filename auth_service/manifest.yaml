@@ -26,9 +26,21 @@ spec:
         envFrom:
         - configMapRef:
             name: kondo-common
+        env:
+        - name: DISCORD_CLIENT_ID
+          value: /etc/discord/client-id
+        - name: DISCORD_CLIENT_SECRET
+          value: /etc/discord/client-secret
+        volumeMounts:
+        - name: discord-creds
+          mountPath: /etc/discord
         ports:
         - name: http
           containerPort: 8000
+      volumes:
+      - name: discord-creds
+        secret:
+          secretName: discord-credentials
 
 ---
 apiVersion: v1
