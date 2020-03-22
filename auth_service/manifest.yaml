@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: auth
-        image: docker.pkg.github.com/hreeder/kondo/auth
+        image: kondogg/auth
         imagePullPolicy: Always
         resources:
           limits:

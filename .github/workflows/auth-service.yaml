@@ -20,11 +20,11 @@ jobs:
         ref: ${{ github.ref }}
     
     - run: |
-        echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+        echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u hreeder --password-stdin
         docker build -t image -f auth_service/Dockerfile .
 
-        docker tag image docker.pkg.github.com/hreeder/kondo/auth:dev
-        docker push docker.pkg.github.com/hreeder/kondo/auth
+        docker tag image kondogg/auth:dev
+        docker push kondogg/auth
 
   apply:
     name: Apply
@@ -51,4 +51,4 @@ jobs:
         kubectl-version: "v1.14.8"
         namespace: ${{ env.K8S_NAMESPACE }}
         manifests: auth_service/manifest.yaml
-        images: docker.pkg.github.com/hreeder/kondo/auth:dev
+        images: kondogg/auth:dev
