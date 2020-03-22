@@ -1,0 +1,15 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: kondo-dev
+  namespace: kondo-dev
+spec:
+  rules:
+  - host: api.kondo-dev.err.wtf
+    http:
+      paths:
+      - path: /api/auth
+        backend:
+          serviceName: auth
+          servicePort: 8000
