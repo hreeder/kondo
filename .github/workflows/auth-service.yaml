@@ -6,6 +6,10 @@ on:
     branches:
     - dev
     - master
+    paths:
+    - .github/auth-service.yaml
+    - auth_service/**
+    - shared/**
 
 jobs:
   build:
@@ -52,3 +56,6 @@ jobs:
         namespace: ${{ env.K8S_NAMESPACE }}
         manifests: auth_service/manifest.yaml
         images: kondogg/auth:dev
+
+    - name: Rollout Auth Service
+      run: kubectl rollout restart deployment/auth
