@@ -22,11 +22,12 @@ with open(os.environ["DISCORD_CLIENT_SECRET"]) as client_secret:
 def begin():
     """Begin Discord Authorization Flow."""
     authorize_url = "https://discordapp.com/api/oauth2/authorize"
+    redirect_uri = request.args.get("redirect") or url_for(".callback", _external=True)
     params = {
         "client_id": CLIENT_ID,
         "scope": " ".join(["identify", "guilds"]),
         "response_type": "code",
-        "redirect_uri": url_for(".callback", _external=True),
+        "redirect_uri": redirect_uri,
     }
 
     return redirect(f"{authorize_url}?{urlencode(params)}")
