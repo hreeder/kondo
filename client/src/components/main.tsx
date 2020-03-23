@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'semantic-ui-react';
 
 import { useStore } from '../stores';
 
@@ -6,9 +7,9 @@ export const Main = () => {
     const { user } = useStore();
 
     return (
-        <button
+        <Button
             onClick={() => user.doAnotherThing()}>
             Do the thing!
-        </button>
+        </Button>
     )
 }
