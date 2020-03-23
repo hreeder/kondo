@@ -37,10 +37,11 @@ def begin():
 def callback():
     """Handle callback after the user has authenticated against Discord."""
     code = request.args["code"]
+    redirect_uri = request.args.get("redirect") or url_for(".callback", _external=True)
     params = {
         "grant_type": "authorization_code",
         "code": code,
-        "redirect_uri": url_for(".callback", _external=True),
+        "redirect_uri": redirect_uri,
     }
     jwt = requests.post(
         "https://discordapp.com/api/oauth2/token",
