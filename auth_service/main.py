@@ -5,6 +5,7 @@ Pylint Disables:
 """
 # pylint: disable=invalid-name
 from flask import Flask
+from flask_cors import CORS
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from shared.kondo.health import HEALTH
@@ -13,6 +14,7 @@ from shared.kondo.metrics import wrap_with_prometheus
 from .discord_auth import AUTH
 
 app = Flask(__name__)
+CORS(app)
 app.register_blueprint(AUTH, url_prefix="/auth/discord")
 app.register_blueprint(HEALTH, url_prefix="/auth/_health")
 
