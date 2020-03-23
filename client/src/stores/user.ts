@@ -29,15 +29,14 @@ export default class UserStore {
     return "https://cdn.discordapp.com/embed/avatars/1.png"
   }
 
-  doAnotherThing() {
-    console.log("Another Thing")
+  @computed get displayName() {
+    return `${this.name}#${this.discriminator}`
   }
 
   completeLogin(code: string) {
     let usr = this;
     axios.get(`${getAPIRoot()}/auth/discord/callback?code=${code}&redirect=${getLoginRedirectUrl()}`)
       .then((response) => {
-        console.log(response);
         usr.loginErrorMessage = "";
         usr.accessToken = response.data.jwt.access_token;
 

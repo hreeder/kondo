@@ -1,6 +1,7 @@
 import React from 'react'
-import { Container, Menu, Image } from 'semantic-ui-react'
+import { Container, Menu, Image, Label } from 'semantic-ui-react'
 import { observer } from 'mobx-react'
+import { Link, NavLink } from 'react-router-dom'
 
 import { useStore } from '../stores'
 import { getAPIRoot } from '../envVars'
@@ -17,10 +18,16 @@ export const TopMenu = observer(() => {
     rightMenuItems.push(
       <Menu.Item key="username" as='a'>
         <Image size='mini' src={user.avatarUrl} style={{ marginRight: '1em',borderRadius: '50%' }} />
-        {user.name}
+        {user.displayName}
       </Menu.Item>
     )
     rightMenuItems.push(<Menu.Item key="logout" as='a'>Log Out</Menu.Item>);
+
+    leftMenuItems.push(
+      <Menu.Item key="games" as={NavLink} to="/games">
+        Games
+      </Menu.Item>
+    )
   } else {
     const loginUrl = `${getAPIRoot()}/auth/discord?redirect=${getLoginRedirectUrl()}`;
     rightMenuItems.push(<Menu.Item key="login" as='a' href={loginUrl}>Log In with Discord</Menu.Item>);
@@ -30,9 +37,10 @@ export const TopMenu = observer(() => {
     <div>
       <Menu fixed='top' inverted>
         <Container>
-          <Menu.Item as='a' header>
+          <Menu.Item as={Link} to="/" header>
             <Image size='mini' src={logo} style={{ marginRight: '1.5em' }} />
-            Kondo
+            Kondo 
+            <Label color='red'>ALPHA</Label>
           </Menu.Item>
           {leftMenuItems}
 

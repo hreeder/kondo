@@ -1,11 +1,11 @@
 import React from 'react'
 
+import GamesStore from './games'
 import UserStore from './user'
-import State from './state'
 
 export const storesContext = React.createContext({
+  games: new GamesStore(),
   user: new UserStore(),
-  state: new State()
 })
 
 export const useStore = () => React.useContext(storesContext)

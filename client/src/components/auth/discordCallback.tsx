@@ -9,23 +9,22 @@ export const DiscordCallback = observer(() => {
 
   const urlParams = new URLSearchParams(window.location.search);
   const code = urlParams.get("code");
-  if (code != null && user.loginErrorMessage === "") {
-    user.completeLogin(code);
-  }
 
   if (user.loggedIn) {
-    console.log("Logged In!")
     return <Redirect to="/" />
   }
 
   if (user.loginErrorMessage !== "") {
-    console.log(user.loginErrorMessage)
     return (
       <div>
         <h3>Unable to log you in with Discord.</h3>
         <h5>We got: {user.loginErrorMessage}</h5>
       </div>
     )
+  }
+
+  if (code != null && user.loginErrorMessage === "") {
+    user.completeLogin(code);
   }
 
   return (
