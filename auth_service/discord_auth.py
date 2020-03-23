@@ -48,6 +48,10 @@ def callback():
         auth=(CLIENT_ID, CLIENT_SECRET),
     )
     jwt = jwt.json()
-    discord = Discord(jwt["access_token"])
+    response = {"jwt": jwt}
 
-    return jsonify(jwt=jwt, user_info=discord.user())
+    if "access_token" in jwt:
+        discord = Discord(jwt["access_token"])
+        response["user_info"] = discord.user()
+
+    return jsonify(**response)
