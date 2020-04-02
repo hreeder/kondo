@@ -18,4 +18,8 @@ def prom_before_request():
 
 def wrap_with_prometheus(app):
     app.before_request_funcs.setdefault(None, []).append(prom_before_request)
-    return DispatcherMiddleware(app, {"/metrics": prometheus_client.make_wsgi_app()})
+    app.wsgi_app = DispatcherMiddleware(
+        app.wsgi_app, {"/metrics": prometheus_client.make_wsgi_app()}
+    )
+
+    return app

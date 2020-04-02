@@ -1,54 +1,108 @@
-import axios from "axios";
-import { observable, computed } from "mobx"
+import axios from 'axios';
+import { observable, computed } from 'mobx';
 
 import { getAPIRoot } from '../envVars';
 
-import { getLoginRedirectUrl } from '../authUtil'
+import { getLoginRedirectUrl } from '../authUtil';
+
+interface DiscordUserInfo {
+  id: string;
+  username: string;
+  discriminator: string;
+  avatar: string;
+}
 
 export default class UserStore {
-  @observable accessToken: string = "";
+  @observable accessToken = '';
+  @observable tokenExpiresAt = 0;
 
-  @observable id: string = "";
-  @observable name: string = "";
-  @observable discriminator: number = 0;
-  @observable avatarHash: string = "";
+  @observable id = '';
+  @observable name = '';
+  @observable discriminator = 0;
+  @observable avatarHash = '';
 
-  @observable loginErrorMessage: string = "";
+  @observable loginErrorMessage = '';
 
-  @computed get loggedIn() {
-    return this.accessToken === "" ? false : true;
+  @computed get loggedIn(): boolean {
+    return this.accessToken === '' ? false : true;
   }
 
-  @computed get avatarUrl() {
-    if (this.avatarHash === "" && this.discriminator !== 0) {
-      const modulated_discriminator = this.discriminator % 5;
-      return `https://cdn.discordapp.com/embed/avatars/${modulated_discriminator}.png`
-    } else if (this.avatarHash !== "") {
-      return `https://cdn.discordapp.com/avatars/${this.id}/${this.avatarHash}`
+  constructor() {
+    const storedJWT = localStorage.getItem('kondo-user-jwt');
+
+    if (storedJWT) {
+      const { accessToken, expiration } = JSON.parse(storedJWT);
+      // Only hydrate the access token if it's still valid
+      if (new Date().getTime() < expiration) {
+        this.accessToken = accessToken;
+        this.tokenExpiresAt = expiration;
+
+        axios
+          .get(`${getAPIRoot()}/auth/discord/userinfo`, {
+            headers: {
+              Authorization: `Bearer ${this.accessToken}`,
+            },
+          })
+          .then((response) =>
+            this.updateFromUserInfo(response.data as DiscordUserInfo)
+          );
+      }
     }
-    return "https://cdn.discordapp.com/embed/avatars/1.png"
   }
 
-  @computed get displayName() {
-    return `${this.name}#${this.discriminator}`
+  @computed get avatarUrl(): string {
+    if (this.avatarHash === '' && this.discriminator !== 0) {
+      const modulatedDiscriminator = this.discriminator % 5;
+      return `https://cdn.discordapp.com/embed/avatars/${modulatedDiscriminator}.png`;
+    } else if (this.avatarHash !== '') {
+      return `https://cdn.discordapp.com/avatars/${this.id}/${this.avatarHash}`;
+    }
+    return 'https://cdn.discordapp.com/embed/avatars/1.png';
   }
 
-  completeLogin(code: string) {
-    let usr = this;
-    axios.get(`${getAPIRoot()}/auth/discord/callback?code=${code}&redirect=${getLoginRedirectUrl()}`)
+  @computed get displayName(): string {
+    return `${this.name}#${this.discriminator}`;
+  }
+
+  completeLogin(code: string): void {
+    axios
+      .get(
+        `${getAPIRoot()}/auth/discord/callback?code=${code}&redirect=${getLoginRedirectUrl()}`
+      )
       .then((response) => {
-        usr.loginErrorMessage = "";
-        usr.accessToken = response.data.jwt.access_token;
+        this.loginErrorMessage = '';
+        this.accessToken = response.data.jwt.access_token;
+        const expires = new Date();
+        expires.setSeconds(expires.getSeconds() + response.data.jwt.expires_in);
+        this.tokenExpiresAt = expires.getTime();
 
-        usr.id = response.data.user_info.id;
-        usr.name = response.data.user_info.username;
-        usr.discriminator = parseInt(response.data.user_info.discriminator);
-        usr.avatarHash = response.data.user_info.avatar;
+        this.updateFromUserInfo(response.data.user_info as DiscordUserInfo);
+
+        // Store these for retrieval later
+        localStorage.setItem(
+          'kondo-user-jwt',
+          JSON.stringify({
+            accessToken: this.accessToken,
+            expiration: this.tokenExpiresAt,
+          })
+        );
       })
       .catch((error) => {
-        console.error("Unable to authenticate with Discord (via backend)");
+        console.error('Unable to authenticate with Discord (via backend)');
         console.error(error.response.data);
-        usr.loginErrorMessage = error.response.data.error_description;
+        this.loginErrorMessage = error.response.data.error_description;
       });
+  }
+
+  private updateFromUserInfo({
+    id,
+    username,
+    discriminator,
+    avatar,
+  }: DiscordUserInfo): void {
+    this.id = id;
+    this.name = username;
+    this.discriminator = parseInt(discriminator);
+    this.avatarHash = avatar;
   }
 }

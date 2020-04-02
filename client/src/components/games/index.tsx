@@ -1,9 +1,14 @@
-import React from 'react'
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 
-import { GamesLanding } from './landing'
+import { GamesList } from './list';
+import { NewGame } from './new';
 
-export class GamesRoot extends React.Component {
-  render() {
-    return <GamesLanding />
-  }
-}
+export const GamesRoot = ({ match }: any): JSX.Element => {
+  return (
+    <Switch>
+      <Route path={`${match.path}/new`} component={NewGame} />
+      <Route component={GamesList} />
+    </Switch>
+  );
+};

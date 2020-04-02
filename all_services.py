@@ -7,9 +7,8 @@ Pylint Disables:
     invalid-name - allow "app" to exist for flask usage
 """
 # pylint: disable=invalid-name
-from flask import Flask
-
 from auth_service.discord_auth import AUTH
+from games_service.routes import GAMES
+from shared.kondo.flask import create_app
 
-app = Flask(__name__)
-app.register_blueprint(AUTH, url_prefix="/auth/discord")
+app = create_app(__name__, [AUTH, GAMES])

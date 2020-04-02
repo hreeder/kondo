@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-HEALTH = Blueprint("health", __name__)
+HEALTH = Blueprint("health", __name__, url_prefix="/_health")
 
 
 @HEALTH.route("/")

@@ -1,7 +1,7 @@
-export function getAPIRoot() {
+export function getAPIRoot(): string {
   if (process.env.REACT_APP_API_ROOT) {
-    return process.env.REACT_APP_API_ROOT
-  } else {
-    return "https://api.kondo.err.wtf"
+    return process.env.REACT_APP_API_ROOT;
   }
+
+  return 'https://api.kondo.err.wtf';
 }
