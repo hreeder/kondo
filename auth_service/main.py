@@ -6,6 +6,6 @@ Pylint Disables:
 # pylint: disable=invalid-name
 from shared.kondo.flask import create_app
 
-from .discord_auth import AUTH
+from .discord_auth import DISCORD_AUTH
 
-app = create_app(__name__, [AUTH])
+app = create_app(__name__, [DISCORD_AUTH])

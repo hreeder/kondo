@@ -1,4 +1,7 @@
+import axios from 'axios';
 import { observable, computed } from 'mobx';
+
+import { getAPIRoot } from '../envVars';
 
 export const SORT_DEFAULT = 0;
 export const SORT_ALTERNATIVE = 1;
@@ -109,6 +112,18 @@ export default class GamesStore {
 
   @computed get presentableSessionList(): Array<GameSession> {
     return this.sessionList;
+  }
+
+  fetchGames(): void {
+    axios
+      .get(`${getAPIRoot()}/games`, {
+        headers: {
+          Authorization: `Bearer ${this.}`
+        }
+      })
+      .then((response) => {
+        console.log(response)
+      })
   }
 
   getSteamGame(appId: number): SteamGame | undefined {

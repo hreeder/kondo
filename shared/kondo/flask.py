@@ -9,7 +9,7 @@ from shared.kondo.health import HEALTH
 from shared.kondo.metrics import wrap_with_prometheus
 
 
-def create_app(name, blueprints, config=None, extensions=None):
+def create_app(name, blueprints, config=None, extensions=None, migrate=None):
     app = Flask(name)
 
     if config:
@@ -20,12 +20,15 @@ def create_app(name, blueprints, config=None, extensions=None):
 
     default_extensions = [cors]
 
-    if not instance(extensions, list):
+    if not isinstance(extensions, list):
         extensions = []
 
     extensions = default_extensions + extensions
     for extension in extensions:
         extension.init_app(app)
+
+    if migrate:
+        migrate[0].init_app(app, migrate[1])
 
     blueprints.append(HEALTH)
 

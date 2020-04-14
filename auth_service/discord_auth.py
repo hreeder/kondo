@@ -10,7 +10,7 @@ from flask import Blueprint, jsonify, redirect, url_for, request
 from shared.discord import Discord
 from shared.kondo.flask import header_required
 
-AUTH = Blueprint("discord_auth", __name__, url_prefix="/auth/discord")
+DISCORD_AUTH = Blueprint("discord_auth", __name__, url_prefix="/auth/discord")
 
 with open(os.environ["DISCORD_CLIENT_ID"]) as client_id:
     CLIENT_ID = client_id.read()
@@ -19,7 +19,7 @@ with open(os.environ["DISCORD_CLIENT_SECRET"]) as client_secret:
     CLIENT_SECRET = client_secret.read()
 
 
-@AUTH.route("/")
+@DISCORD_AUTH.route("/")
 def begin():
     """Begin Discord Authorization Flow."""
     authorize_url = "https://discordapp.com/api/oauth2/authorize"
@@ -34,7 +34,7 @@ def begin():
     return redirect(f"{authorize_url}?{urlencode(params)}")
 
 
-@AUTH.route("/callback")
+@DISCORD_AUTH.route("/callback")
 def callback():
     """Handle callback after the user has authenticated against Discord."""
     code = request.args["code"]
@@ -62,7 +62,7 @@ def callback():
     return jsonify(**response)
 
 
-@AUTH.route("/userinfo")
+@DISCORD_AUTH.route("/userinfo")
 @header_required("Authorization", status="unauthorized", code=401)
 def userinfo():
     """Return discord @me endpoint"""
